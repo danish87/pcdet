@@ -78,6 +78,16 @@ class DataAugmentor(object):
         data_dict['points'] = points
         return data_dict
 
+    def random_world_translation(self, data_dict=None, config=None):
+        if data_dict is None:
+            return partial(self.random_world_translation, config=config)
+        gt_boxes, points = augmentor_utils.global_translation(
+            data_dict['gt_boxes'], data_dict['points'], config['WORLD_TRANSLATE_STD']
+        )
+        data_dict['gt_boxes'] = gt_boxes
+        data_dict['points'] = points
+        return data_dict
+
     def forward(self, data_dict):
         """
         Args:

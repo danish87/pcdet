@@ -66,7 +66,7 @@ class AxisAlignedTargetAssigner(object):
                                          for c in cur_gt_classes], dtype=torch.bool)
 
                 if self.use_multihead:
-                    anchors = anchors.permute(3, 4, 0, 1, 2, 5).contiguous().view(-1, anchors.shape[-1])
+                    anchors = anchors.permute(3, 4, 0, 1, 2, 5).contiguous().view(-1, anchors.shape[-1]) # [num_size, num_rots, z, y, x, 7]
                     if self.seperate_multihead:
                         selected_classes = cur_gt_classes[mask].clone()
                         if len(selected_classes) > 0:
