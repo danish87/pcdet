@@ -1,6 +1,6 @@
 CLASS_NAMES: ['Car', 'Bus', 'Truck', 'Pedestrian', 'Cyclist']
 
-USE_PRETRAIN_MODEL: True
+USE_PRETRAIN_MODEL: False
 PRETRAIN_CKPT: ../output/cfgs/once_models/semi_learning_models/ioumatch3d_pvrcnn_small/default/pretrain_ckpt/checkpoint_epoch_1.pth
 CLOUD_PRETRAIN_CKPT: /home/work/user-job-dir/ONCE_Benchmark/output/once_models/ckpt/checkpoint_xx.pth
 
@@ -35,7 +35,7 @@ DATA_CONFIG:
 OPTIMIZATION:
     PRETRAIN:
         BATCH_SIZE_PER_GPU: 4
-        NUM_EPOCHS: 1
+        NUM_EPOCHS: 3
         OPTIMIZER: adam_onecycle
         LR: 0.003
         WEIGHT_DECAY: 0.01
@@ -54,7 +54,7 @@ OPTIMIZATION:
         NAME: 3DIoUMatch
         LD_BATCH_SIZE_PER_GPU: 1
         UD_BATCH_SIZE_PER_GPU: 4
-        NUM_EPOCHS: 2 # 5 epoch
+        NUM_EPOCHS: 5
 
         TEACHER:
             NUM_ITERS_PER_UPDATE: -1

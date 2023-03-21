@@ -22,7 +22,7 @@ from eval_utils.eval_utils import eval_one_epoch
 def parse_config():
     parser = argparse.ArgumentParser(description='arg parser')
     parser.add_argument('--cfg_file', type=str, default=None, help='specify the config for training')
-    parser.add_argument('--workers', type=int, default=0, help='number of workers for dataloader')
+    parser.add_argument('--workers', type=int, default=8, help='number of workers for dataloader')
     parser.add_argument('--extra_tag', type=str, default='default', help='extra tag for this experiment')
     parser.add_argument('--ckpt', type=str, default=None, help='checkpoint to start from')
     parser.add_argument('--pretrained_model', type=str, default=None, help='pretrained_model')
@@ -156,7 +156,7 @@ def main():
         logger.info(pretrain_model)
         eval_pretrain_dir = output_dir / 'eval' / 'eval_with_pretraining'
         eval_pretrain_dir.mkdir(parents=True, exist_ok=True)
-        #eval_one_epoch(cfg, pretrain_model, dataloaders['test'], -1, logger, dist_test=dist_train, save_to_file=False, result_dir=eval_pretrain_dir)
+        eval_one_epoch(cfg, pretrain_model, dataloaders['test'], -1, logger, dist_test=dist_train, save_to_file=False, result_dir=eval_pretrain_dir)
     else:
         pretrain_model.cuda()
         pretrain_optimizer = build_optimizer(pretrain_model, cfg.OPTIMIZATION.PRETRAIN)
@@ -197,22 +197,22 @@ def main():
         logger.info('**********************End pre-training %s/%s(%s)**********************\n\n\n'
                     % (cfg.EXP_GROUP_PATH, cfg.TAG, args.extra_tag))
 
-        # logger.info('**********************Start evaluation for pre-training %s/%s(%s)**********************' %
-        #             (cfg.EXP_GROUP_PATH, cfg.TAG, args.extra_tag))
-        # eval_pretrain_dir = output_dir / 'eval' / 'eval_with_pretraining'
-        # eval_pretrain_dir.mkdir(parents=True, exist_ok=True)
-        # args.start_epoch = cfg.OPTIMIZATION.PRETRAIN.NUM_EPOCHS - 10
-        # repeat_eval_ckpt(
-        #     model=pretrain_model.module if dist_train else pretrain_model,
-        #     test_loader=dataloaders['test'],
-        #     args=args,
-        #     eval_output_dir=eval_pretrain_dir,
-        #     logger=logger,
-        #     ckpt_dir=pretrain_ckpt_dir,
-        #     dist_test=dist_train
-        # )
-        # logger.info('**********************End evaluation for pre-training %s/%s(%s)**********************' %
-        #             (cfg.EXP_GROUP_PATH, cfg.TAG, args.extra_tag))
+        logger.info('**********************Start evaluation for pre-training %s/%s(%s)**********************' %
+                    (cfg.EXP_GROUP_PATH, cfg.TAG, args.extra_tag))
+        eval_pretrain_dir = output_dir / 'eval' / 'eval_with_pretraining'
+        eval_pretrain_dir.mkdir(parents=True, exist_ok=True)
+        args.start_epoch = cfg.OPTIMIZATION.PRETRAIN.NUM_EPOCHS - 10
+        repeat_eval_ckpt(
+            model=pretrain_model.module if dist_train else pretrain_model,
+            test_loader=dataloaders['test'],
+            args=args,
+            eval_output_dir=eval_pretrain_dir,
+            logger=logger,
+            ckpt_dir=pretrain_ckpt_dir,
+            dist_test=dist_train
+        )
+        logger.info('**********************End evaluation for pre-training %s/%s(%s)**********************' %
+                    (cfg.EXP_GROUP_PATH, cfg.TAG, args.extra_tag))
 
     # --------------------------------stage II SSL training---------------------------------------
     logger.info('************************Stage II SSL training************************')
